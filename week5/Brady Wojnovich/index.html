@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body> 
+        <h1>Brady Wojnovich</h1>
+        <p id="rainbow-text">free bbl's for everyone</p>
+        <p>interviewer: how do your pants stay up during performances?</p>
+        <p>lil uzi: belt</p>
+
+        <img
+           id="spinning-image"
+           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPB1BD8bUmtzO_2U1ZA__3iIp48dOPQKk1lQ&s"
+        />
+        <br>
+        <button onclick="spinImage()">Spin</button>
+
+        <h1>
+            <span id="counter">0</span> cookies
+        </h1>
+        <img id="cookie-img" 
+             src="https://www.gfifoods.com/media/catalog/product/cache/608c797bf41e8874bcf75172f32fd01b/1/_/1.520oz20cookie_20220613-094305_rqhft3tmv23k13bn.jpg" 
+             onclick="addOneToCounter()" 
+        />
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const savedCount = localStorage.getItem("cookieCount");
+                if (savedCount !== null) {
+                    document.getElementById("counter").innerText = savedCount;
+                    document.getElementById("cookie-img").style.width = `${200 + savedCount * 5}px`;
+                }
+            });
+
+            function spinImage() {
+                const img = document.getElementById("spinning-image");
+                img.style.transition = "transform 1s linear";
+                img.style.transform = "rotate(360deg)";
+                
+                setTimeout(() => {
+                    img.style.transform = "rotate(0deg)";
+                }, 1000);
+            }
+
+            function addOneToCounter() {
+                const counter = document.getElementById("counter");
+                let count = parseInt(counter.innerText) + 1;
+                counter.innerText = count;
+
+                // Save new count in localStorage
+                localStorage.setItem("cookieCount", count);
+
+                // Increase cookie size
+                increaseCookieSize(count);
+            }
+
+            function increaseCookieSize(count) {
+                const cookie = document.getElementById("cookie-img");
+                cookie.style.width = `${200 + count * 5}px`; // Increases size by 5px per click
+            }
+        </script>
+    </body>
+</html>
