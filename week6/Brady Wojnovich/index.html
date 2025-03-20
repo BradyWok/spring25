@@ -24,12 +24,6 @@
       var form = document.getElementById('form');
       var input = document.getElementById('input');
       var messages = document.getElementById('messages');
-      var userId = null;
-
-      
-      socket.on('connect', function() {
-        userId = socket.id; 
-      });
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -40,15 +34,23 @@
       });
 
       socket.on('chat message', function(data) {
-        var existingMessage = document.getElementById(data.id);
-        if (existingMessage) {
-          existingMessage.textContent = `User ${data.id}: ${data.text}`;
+        var item = document.createElement('li');
+
+        if (data.type === 'gif') {
+          var img = document.createElement('img');
+          img.src = data.url;
+          img.style.maxWidth = '200px';
+          item.textContent = `${data.name}: `;
+          item.appendChild(img);
+        } else if (data.type === 'list') {
+          item.style.whiteSpace = 'pre-line';
+          item.textContent = data.text;
         } else {
-          var item = document.createElement('li');
-          item.id = data.id;
-          item.textContent = `User ${data.id}: ${data.text}`;
-          messages.appendChild(item);
+          item.textContent = `${data.name}: ${data.text}`;
         }
+
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
       });
     </script>
   </body>
