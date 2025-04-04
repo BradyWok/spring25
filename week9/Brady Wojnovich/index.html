@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat App</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #messages {
+      list-style: none;
+      padding: 10px;
+      flex: 1;
+      overflow-y: auto;
+      margin: 0;
+    }
+
+    #messages li {
+      padding: 8px;
+      background: #eee;
+      margin-bottom: 5px;
+      border-radius: 5px;
+    }
+
+    #form {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      background-color: white;
+      position: sticky;
+      bottom: 0;
+    }
+
+    #username, #input {
+      padding: 10px;
+      margin-right: 8px;
+    }
+
+    #username {
+      width: 20%;
+    }
+
+    #input {
+      flex: 1;
+    }
+
+    #form button {
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <form id="form">
+    <input id="username" placeholder="Your name" required>
+    <input id="input" autocomplete="off" placeholder="Type a message" required>
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const usernameInput = document.getElementById('username');
+    const messages = document.getElementById('messages');
+
+    window.addEventListener('DOMContentLoaded', loadHistory);
+
+    async function loadHistory() {
+      try {
+        const res = await fetch('/messages');
+        const history = await res.json();
+        history.forEach(msg => {
+          const item = document.createElement('li');
+          item.textContent = `${msg.username || 'Anonymous'}: ${msg.content}`;
+          messages.appendChild(item);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (input.value && usernameInput.value) {
+        socket.emit('chat message', {
+          username: usernameInput.value,
+          text: input.value
+        });
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', function(data) {
+      const item = document.createElement('li');
+      item.textContent = `${data.username || 'Anonymous'}: ${data.text}`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    });
+  </script>
+</body>
+</html>
